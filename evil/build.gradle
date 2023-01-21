@@ -1,0 +1,88 @@
+plugins {
+    id 'com.android.application'
+}
+
+apply plugin: 'stringfog'
+
+stringfog {
+    // 这是加解密key，可以自由定义。
+    key 'quiet'
+
+    // 开关
+    enable true
+
+    // 加解密库的实现类路径，需和上面配置的加解密算法库一致。
+    implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
+
+    // 指定需加密的代码包路径，可配置多个，未指定将默认全部加密。
+    //fogPackages = ['com.xxx.xxx']
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file('/home/che/Apps/app_che.keystore')
+            storePassword 'quiet@'
+            keyAlias 'app_che'
+            keyPassword 'quiet@'
+        }
+    }
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
+
+    defaultConfig {
+        applicationId "com.example.evil"
+        minSdkVersion 16
+        targetSdk 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11"
+            }
+        }
+
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+
+        signingConfig signingConfigs.release
+        targetSdkVersion 29
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //useProguard = true
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    ndkVersion '21.4.7075529'
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // 这里要和上面选用的加解密算法库一致，用于运行时解密。
+    implementation 'com.github.megatronking.stringfog:xor:1.1.0'
+}

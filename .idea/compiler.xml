@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="Hello.activity_lifecycle" target="1.8" />
+      <module name="Hello.app_lifecycle" target="1.8" />
+      <module name="Hello.appservice" target="1.8" />
+      <module name="Hello.httpnet" target="1.8" />
+      <module name="Hello.httpso" target="1.8" />
+      <module name="Hello.jni" target="1.8" />
+      <module name="Hello.MySandHook.app" target="1.8" />
+      <module name="Hello.MySandHook.hookers" target="1.8" />
+      <module name="Hello.MySandHook.hooklib" target="1.8" />
+      <module name="Hello.MySandHook.nativehook" target="1.8" />
+      <module name="Hello.MySandHook.xposedcompat" target="1.8" />
+      <module name="Hello.okhttp1" target="1.8" />
+      <module name="Hello.permissions" target="1.8" />
+      <module name="Hello.permtestclient" target="1.8" />
+      <module name="Hello.proguard" target="1.8" />
+      <module name="Hello.proxyapp" target="1.8" />
+      <module name="Hello.retrofit" target="1.8" />
+      <module name="Hello.simplest" target="1.8" />
+      <module name="Hello.xpmodules" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

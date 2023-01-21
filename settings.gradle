@@ -1,0 +1,27 @@
+//include ':httpnet'
+//include ':retrofit'
+//include ':httpso'
+//include ':frida-demo2'
+//include ':frida-demo1'
+//include ':jni'
+include ':hellonative'
+//include ':simplest'
+//include ':okhttp1'
+//include ':proxyapp'
+//include ':app_lifecycle'
+//include ':permtestclient'
+//include ':evil'
+//include ':appservice'
+//include ':activity_lifecycle'
+//include ':xpmodules'
+//include ':proguard'
+include ':permissions'
+//
+//include ':MySandHook:app',
+//        ':MySandHook:hooklib',
+//        ':MySandHook:hookers',
+//        ':MySandHook:annotation',
+//        ':MySandHook:xposedcompat',
+//        ':MySandHook:nativehook'
+
+rootProject.name = "Hello"

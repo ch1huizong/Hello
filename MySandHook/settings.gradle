@@ -1,0 +1,2 @@
+//include ':MySandHook:app', ':MySandHook:hooklib', ':MySandHook:hookers', ':MySandHook:annotation', ':MySandHook:xposedcompat', ':MySandHook:nativehook'
+include ':app', ':hooklib', ':hookers', ':annotation', ':xposedcompat', ':nativehook'
