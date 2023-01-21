@@ -1,4 +1,4 @@
-package com.example.appservice;
+package com.example.app_service;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 
 // 客户端代码部分
 public class MainActivity extends AppCompatActivity {
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void doThreads() {
-        // thread method1
+        // 1. 常规方式使用线程
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -126,31 +127,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
 
-        // thread method2
+        // 2. 处理器方式使用线程
         Message message = Message.obtain();
         message.what = 1;
         message.obj = null;
 
-        TestHandler mh = new TestHandler();  // 注意!
-        mh.sendMessage(message);
+        TestHandler mh = new TestHandler();  // 消息处理在新的线程中进行
+        mh.sendMessage(message); // 发送消息
 
-        // thread method3
+        // 3. 异步任务
         new TestTask().execute();
-
-
     }
 
     // thread method2
-    class TestHandler extends Handler {
-
+    class TestHandler extends Handler { // 但是为何它的Thread-ID总是2?
         @Override
-        public void handleMessage(@NonNull Message msg) { //  线程处理逻辑， 有点类似队列
+        public void handleMessage(@NonNull Message msg) { // 线程处理逻辑,有点类似队列, 但是是独立的线程
             switch (msg.what) {
+                case 1:
+                    Log.d("Che", "Got message => " + msg.what);
                 default:
                     Log.d("Che", "Two - Handler thread: " + Thread.currentThread().getId());
-                    super.handleMessage(msg);
-
             }
+            super.handleMessage(msg);
         }
     }
 

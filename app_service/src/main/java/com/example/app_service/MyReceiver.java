@@ -1,4 +1,4 @@
-package com.example.appservice;
+package com.example.app_service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

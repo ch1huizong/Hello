@@ -1,5 +1,5 @@
 // IMyAidlInterface.aidl
-package com.example.appservice;
+package com.example.app_service;
 
 // Declare any non-default types here with import statements
 
