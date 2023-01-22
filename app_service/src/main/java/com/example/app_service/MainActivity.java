@@ -16,43 +16,56 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+// 服务种类:
+// 1. Scheduled服务
+// 2. Started服务, 与启动组件无关
+// 3. Bound服务, 当bind的服务的组件都解绑时，服务消亡
+//
+// Bound服务注意点: c-s形式的服务, 需要返回IBinder接口!
+//      1. 当c-s端在一个进程中的时候， IBinder可以直接继承Binder
+//      2. 不在同一进程, 通过Message或者AIDL通信
 
-// 客户端代码部分
+
+// 服务的客户端代码部分
 public class MainActivity extends AppCompatActivity {
+
     private boolean bound; // 绑定了与否的标志
 
     private ServiceConnection connection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            bound = true;
             Log.d("Che", "onServiceConnected");
 
-            MyService.MyBinder binder = (MyService.MyBinder) iBinder;
-            binder.getService().testToCall();
-            Log.d("Che", "[Service] - add: " + binder.add(1, 2));
-
-            bound = true;
+            MyService.MyBinder binder = (MyService.MyBinder) iBinder; // 通过返回的binder，可以向内或向外 调用指定的功能
+            binder.getService().testToCall(); // 这里是服务的功能调用
+            Log.d("Che", "Service - add: " + binder.add(1, 2));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d("Che", "onServiceDisconnected");
-
             bound = false;
         }
     };
+
+    // 客户端组件如何绑定指定服务? Intent
+    public void boundClick(View view) {
+        Intent intent = new Intent(this, MyService.class);
+        if (!bound) {
+            bindService(intent, connection, Context.BIND_AUTO_CREATE); // 客户端发送请求, 立即返回; 后续处理爱connection中完成
+            ((Button) findViewById(R.id.button4)).setText("Unbind");
+        } else {
+            unbindService(connection);
+            ((Button) findViewById(R.id.button4)).setText("Bind");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // 动态注册一个broadcast receiver
-        /*
-        IntentFilter v = new IntentFilter();
-        v.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        this.getApplicationContext().registerReceiver(new MyReceiver(), v);
-         */
-
 
         // 第一种方式启动服务
         Button btn = findViewById(R.id.button);
@@ -64,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         Button btn1 = findViewById(R.id.button1);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,12 +86,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // 前台服务
         Button btn2 = findViewById(R.id.button2);
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Che", "Start Foreground Service");
                 startService(new Intent(MainActivity.this, MyService.class));
+            }
+        });
+
+        // 第二种方式启动服务
+        Button btn4 = findViewById(R.id.button4);
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String info = (String) ((Button) findViewById(R.id.button4)).getText();
+                Log.d("Che", "Client " + info);
+                boundClick(view);
             }
         });
 
@@ -92,31 +116,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // 第二种方式启动服务
-        Button btn4 = findViewById(R.id.button4);
-        btn4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String info = (String) ((Button) findViewById(R.id.button4)).getText();
-                Log.d("Che", "Client " + info);
-
-                boundClick(view);
-            }
-        });
+        // 动态注册一个broadcast receiver
+        /*
+        IntentFilter v = new IntentFilter();
+        v.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        this.getApplicationContext().registerReceiver(new MyReceiver(), v);
+         */
     }
 
-    // 客户端绑定代码部分
-    public void boundClick(View view) {
-        Intent intent = new Intent(this, MyService.class);
-        if (!bound) {
-            bindService(intent, connection, Context.BIND_AUTO_CREATE); // 客户端触发服务开启
-            ((Button) findViewById(R.id.button4)).setText("Unbind");
-        } else {
-            unbindService(connection);
-            ((Button) findViewById(R.id.button4)).setText("Bind");
-        }
-    }
+    ////////////////////////////////////////////////////////////
+    //
+    //              线程部分使用实例
+    //
+    ////////////////////////////////////////////////////////////
 
     public void doThreads() {
         // 1. 常规方式使用线程
