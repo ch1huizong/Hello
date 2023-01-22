@@ -3,6 +3,7 @@ package com.example.app_service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -116,12 +117,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 动态注册一个broadcast receiver
-        /*
+        // 动态注册broadcast receiver, 发挥作用了
         IntentFilter v = new IntentFilter();
         v.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         this.getApplicationContext().registerReceiver(new MyReceiver(), v);
-         */
     }
 
     ////////////////////////////////////////////////////////////

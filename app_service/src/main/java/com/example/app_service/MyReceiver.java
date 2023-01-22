@@ -5,13 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+// manifest中静态注册的receiver为什么没发挥作用?
 public class MyReceiver extends BroadcastReceiver {
+
     private boolean isRegistered;
 
-    // 自定义逻辑
+    public MyReceiver() {
+        this.isRegistered = true;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("Che", "Network changed!"); // 为什么没有效果？
+        if(intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+            Log.d("Che", "Network changed!");
+        } else {
+            Log.d("Che", "Handle other broadcast!");
+        }
     }
 }
