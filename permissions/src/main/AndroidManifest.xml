@@ -28,7 +28,7 @@
         android:theme="@style/Theme.Hello">
 
         <activity android:name="com.example.permissions.NoPermActivity" android:exported="true" />
-        <activity android:name="com.example.permissions.PermActivity" android:exported="true" android:permission="com.example.hello.Permission1" />
+        <activity android:name="com.example.permissions.PermActivity" android:exported="true" android:permission="com.example.permissions.Permission1" />
         <activity
             android:name="com.example.permissions.DangerActivity"
             android:enabled="true"

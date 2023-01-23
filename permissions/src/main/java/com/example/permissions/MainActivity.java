@@ -81,18 +81,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sendBroadcast(intent); // Minifest中必须声明使用权限, 第二个参数可以不用
     }
 
-    // 这个组件的权限掌握的不熟练!
+    // 不会用
     public void GrantUriPermClick(View view) {
         Intent intent = new Intent();
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
 
-        //noinspection deprecation
         startActivityForResult(intent, 0);
-    }
-
-    public void DangerActivityClick(View view) {
-        Intent intent = new Intent(MainActivity.this, DangerActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -107,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    public void DangerActivityClick(View view) {
+        Intent intent = new Intent(MainActivity.this, DangerActivity.class);
+        startActivity(intent);
+    }
+
 
     public native String stringFromJNI();
 
