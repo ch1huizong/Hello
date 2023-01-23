@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hello">
+    package="com.example.permissions">
 
     <permission
-        android:name="com.example.hello.Permission1"
+        android:name="com.example.permissions.Permission1"
         android:protectionLevel="normal" />
     <permission
-        android:name="com.example.hello.Permission2"
+        android:name="com.example.permissions.Permission2"
         android:protectionLevel="normal" />
     <permission
-        android:name="com.example.hello.Permission3"
+        android:name="com.example.permissions.Permission3"
         android:protectionLevel="normal" />
     <permission
-        android:name="com.example.hello.Permission4"
+        android:name="com.example.permissions.Permission4"
         android:label="aaa"
         android:protectionLevel="dangerous" />
 
-    <uses-permission android:name="com.example.hello.Permission3" />
-    <uses-permission android:name="com.example.hello.Permission4" />
+    <uses-permission android:name="com.example.permissions.Permission3" />
+    <uses-permission android:name="com.example.permissions.Permission4" />
 
     <application
         android:allowBackup="true"
@@ -27,27 +27,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hello">
 
-        <receiver
-            android:name=".PermReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="com.example.hello.Permission2" />
-
-
-        <activity android:name=".NoPermActivity" android:exported="true" />
-        <activity android:name=".PermActivity" android:exported="true" android:permission="com.example.hello.Permission1" />
+        <activity android:name="com.example.permissions.NoPermActivity" android:exported="true" />
+        <activity android:name="com.example.permissions.PermActivity" android:exported="true" android:permission="com.example.hello.Permission1" />
         <activity
-            android:name=".DangerActivity"
+            android:name="com.example.permissions.DangerActivity"
             android:enabled="true"
             android:exported="true"
-            android:permission="com.example.hello.Permission4" />
-
-        <activity android:name=".MainActivity">
+            android:permission="com.example.permissions.Permission4" />
+        <activity android:name="com.example.permissions.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name="com.example.permissions.PermReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.example.permissions.Permission2"/>
+
     </application>
 
 </manifest>

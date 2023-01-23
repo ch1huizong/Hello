@@ -1,4 +1,4 @@
-package com.example.hello;
+package com.example.permissions;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +9,6 @@ public class PermReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("Che", "PermReceiver onReceive");
+        Log.d("Che", "PermReceiver onReceived !!!");
     }
 }

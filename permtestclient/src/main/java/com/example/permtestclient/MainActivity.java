@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent();
-                        intent.setClassName("com.example.hello", "com.example.hello.PermActivity");
+                        intent.setClassName("com.example.permissions", "com.example.permissions.PermActivity");
                         startActivity(intent);
                     }
                 });
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent();
-                        intent.setClassName("com.example.hello", "com.example.hello.PermReceiver");
+                        intent.setClassName("com.example.permissions", "com.example.permissions.PermReceiver");
                         sendBroadcast(intent); // 启动另一个应用的Receiver
                     }
                 });
@@ -46,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent("com.example.hello.open");
-                        sendBroadcast(intent);
+                        Intent intent = new Intent("com.example.permissions.action1");
+                        sendBroadcast(intent, "com.example.permissions.Permission3");
                     }
                 });
 
@@ -65,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
     // 对于带有danger权限的组件，当另一个应用申请打开的时候，有一个用户确认的过程, 在申请端需要检查确认结果
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void DangerActivityClick(View view) {
-        if (checkSelfPermission("com.example.hello.Permission4") != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{"com.example.hello.Permission4"}, 0);
+        if (checkSelfPermission("com.example.permissions.Permission4") != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{"com.example.permissions.Permission4"}, 0);
         }
     }
 
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             case 0: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent();
-                    intent.setClassName("com.example.hello", "com.example.hello.DangerActivity");
+                    intent.setClassName("com.example.permissions", "com.example.permissions.DangerActivity");
 
                     startActivity(intent);
                 }

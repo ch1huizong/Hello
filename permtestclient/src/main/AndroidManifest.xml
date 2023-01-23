@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.permtestclient">
 
-    <uses-permission android:name="com.example.hello.Permission1" />
-    <uses-permission android:name="com.example.hello.Permission2" />
-    <uses-permission android:name="com.example.hello.Permission3" />
-    <uses-permission android:name="com.example.hello.Permission4" />
+    <uses-permission android:name="com.example.permissions.Permission1" />
+    <uses-permission android:name="com.example.permissions.Permission2" />
+    <uses-permission android:name="com.example.permissions.Permission3" />
+    <uses-permission android:name="com.example.permissions.Permission4" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

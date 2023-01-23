@@ -9,13 +9,13 @@ include ':hellonative'
 //include ':okhttp1'
 //include ':proxyapp'
 //include ':app_lifecycle'
-//include ':permtestclient'
 //include ':evil'
 include ':app_service'
 //include ':activity_lifecycle'
 //include ':xpmodules'
 //include ':proguard'
 include ':permissions'
+include ':permtestclient'
 //
 //include ':MySandHook:app',
 //        ':MySandHook:hooklib',

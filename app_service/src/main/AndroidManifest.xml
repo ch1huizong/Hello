@@ -24,10 +24,10 @@
 
         <receiver
             android:name="com.example.app_service.MyReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.example.app_service.myaction" />
             </intent-filter>
         </receiver>
     </application>

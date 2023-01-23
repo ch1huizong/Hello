@@ -1,4 +1,4 @@
-package com.example.hello;
+package com.example.permissions;
 
 import org.junit.Test;
 

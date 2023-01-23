@@ -1,4 +1,4 @@
-package com.example.hello;
+package com.example.permissions;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button5;
     private Button button6;
 
+    // 第二个Receiver
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -52,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button6.setOnClickListener(this);
 
         // 动态注册receiver
-        IntentFilter i = new IntentFilter("com.example.hello.open");
+        IntentFilter i = new IntentFilter("com.example.permissions.action1");
         i.addCategory(Intent.CATEGORY_DEFAULT);
-        getApplicationContext().registerReceiver(mReceiver, i, "com.example.hello.Permission3", null);
+        getApplicationContext().registerReceiver(mReceiver, i, "com.example.permissions.Permission3", null);
     }
 
     public void NoPermActivityClick(View view) {
@@ -67,14 +68,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
+    // 应用内启动 - manifest注册的Receiver
     public void PermReceiverClick(View view) {
         Intent intent = new Intent(MainActivity.this, PermReceiver.class);
-        sendBroadcast(intent);
+        sendBroadcast(intent); // 可以忽略权限申请
     }
 
+    // 应用内启动 - 动态注册的Receiver
     public void DynamicPermReceiverClick(View view) {
-        Intent intent = new Intent("com.example.hello.open");
-        sendBroadcast(intent);
+        Intent intent = new Intent("com.example.permissions.action1");
+//        sendBroadcast(intent, "com.example.permissions.Permission3");
+        sendBroadcast(intent); // Minifest中必须声明使用权限, 第二个参数可以不用
     }
 
     // 这个组件的权限掌握的不熟练!
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public native String stringFromJNI();
-
 
     @Override
     public void onClick(View view) {

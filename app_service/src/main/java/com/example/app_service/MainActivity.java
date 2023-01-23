@@ -119,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
 
         // 动态注册broadcast receiver, 发挥作用了
         IntentFilter v = new IntentFilter();
-        v.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        this.getApplicationContext().registerReceiver(new MyReceiver(), v);
+        v.addAction("com.example.app_service.myaction");
+        this.getApplicationContext().registerReceiver(new MyReceiver(), v); // context分是app的还是activity的!
     }
 
     ////////////////////////////////////////////////////////////
