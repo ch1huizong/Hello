@@ -6,16 +6,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
+//import android.os.Message;
+import android.os.Looper;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.app_service.entity.Message;
+
 
 // 服务种类:
 // 1. Scheduled服务
@@ -29,6 +37,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 // 服务的客户端代码部分
 public class MainActivity extends AppCompatActivity {
+
+    private IConnectionService connectionServiceProxy;
+    private IMessageService messageServiceProxy;
+    private IServiceManager serviceManagerProxy;
+
+    private MessageReceiveListener messageReceiveListener = new MessageReceiveListener.Stub() {
+        @Override
+        public void onReceiveMessage(Message message) throws RemoteException {
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, message.getContent(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+    };
 
     private boolean bound; // 绑定了与否的标志
 
@@ -121,6 +147,105 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter v = new IntentFilter();
         v.addAction("com.example.app_service.myaction");
         this.getApplicationContext().registerReceiver(new MyReceiver(), v); // context分是app的还是activity的!
+
+        // 启动子进程, 进程间通信AIDL
+        Intent intent = new Intent(this, RemoteService.class);
+        bindService(intent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                try {
+                    serviceManagerProxy = IServiceManager.Stub.asInterface(iBinder);
+                    connectionServiceProxy = IConnectionService.Stub.asInterface(serviceManagerProxy.getService(IConnectionService.class.getSimpleName()));
+                    messageServiceProxy = IMessageService.Stub.asInterface(serviceManagerProxy.getService(IMessageService.class.getSimpleName()));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        }, Context.BIND_AUTO_CREATE);
+
+        Button btn5 = findViewById(R.id.button5);
+        btn5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Che", "Connect");
+                try {
+                    connectionServiceProxy.connect();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button btn6 = findViewById(R.id.button6);
+        btn6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Che", "Disonnect");
+                try {
+                    connectionServiceProxy.disconnect();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button btn7 = findViewById(R.id.button7);
+        btn7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isConnected = false;
+                try {
+                    isConnected = connectionServiceProxy.isConnected();
+                    Log.d("Che", "isConnected => " + isConnected);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button btn8 = findViewById(R.id.button8);
+        btn8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Message msg = new Message();
+                    msg.setContent("message from main");
+                    messageServiceProxy.sendMessage(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button btn9 = findViewById(R.id.button9);
+        btn9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    messageServiceProxy.registerMessageReceiveListener(messageReceiveListener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        Button btn10 = findViewById(R.id.button10);
+        btn10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    messageServiceProxy.unRegisterMessageReceiveListener(messageReceiveListener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     ////////////////////////////////////////////////////////////
@@ -139,30 +264,30 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
         // 2. 处理器方式使用线程
-        Message message = Message.obtain();
-        message.what = 1;
-        message.obj = null;
-
-        TestHandler mh = new TestHandler();  // 消息处理在新的线程中进行
-        mh.sendMessage(message); // 发送消息
+//        Message message = Message.obtain();
+//        message.what = 1;
+//        message.obj = null;
+//
+//        TestHandler mh = new TestHandler();  // 消息处理在新的线程中进行
+//        mh.sendMessage(message); // 发送消息
 
         // 3. 异步任务
         new TestTask().execute();
     }
 
     // thread method2
-    class TestHandler extends Handler { // 但是为何它的Thread-ID总是2?
-        @Override
-        public void handleMessage(@NonNull Message msg) { // 线程处理逻辑,有点类似队列, 但是是独立的线程
-            switch (msg.what) {
-                case 1:
-                    Log.d("Che", "Got message => " + msg.what);
-                default:
-                    Log.d("Che", "Two - Handler thread: " + Thread.currentThread().getId());
-            }
-            super.handleMessage(msg);
-        }
-    }
+//    class TestHandler extends Handler { // 但是为何它的Thread-ID总是2?
+//        @Override
+//        public void handleMessage(@NonNull Message msg) { // 线程处理逻辑,有点类似队列, 但是是独立的线程
+//            switch (msg.what) {
+//                case 1:
+//                    Log.d("Che", "Got message => " + msg.what);
+//                default:
+//                    Log.d("Che", "Two - Handler thread: " + Thread.currentThread().getId());
+//            }
+//            super.handleMessage(msg);
+//        }
+//    }
 
     // thread method3
     class TestTask extends AsyncTask {
@@ -177,23 +302,4 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(o);
         }
     }
-
-    /*
-    // AIDL方法调用
-    private ServiceConnection mAIDLConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            try {
-                IMyAidlInterface.Stub.asInterface(service).basicTypes(0, 0, true, 1, 1, "aa");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-        }
-    };
-     */
-
 }

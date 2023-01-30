@@ -21,6 +21,7 @@
         </activity>
 
         <service android:name="com.example.app_service.MyService" />
+        <service android:name=".RemoteService" android:process=":remote"/>
 
         <receiver
             android:name="com.example.app_service.MyReceiver"

@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.example.appservice"
+        applicationId "com.example.app_service"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
