@@ -55,4 +55,9 @@ public class Message implements Parcelable {
     public void setSendSuccess(boolean sendSuccess) {
         isSendSuccess = sendSuccess;
     }
+
+    public void readFromParcel(Parcel parcel) { // 更新请求端的状态
+        content = parcel.readString();
+        isSendSuccess = parcel.readByte() == 1;
+    }
 }

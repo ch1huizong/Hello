@@ -1,8 +1,7 @@
 // IConnectionService.aidl
 package com.example.app_service;
 
-// Declare any non-default types here with import statements
-
+// 连接服务
 interface IConnectionService {
 
     oneway void connect();

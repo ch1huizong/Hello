@@ -7,9 +7,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import com.example.app_service.entity.Message;
 
@@ -30,8 +29,14 @@ public class RemoteService extends Service {
     RemoteCallbackList<MessageReceiveListener> messageReceiveListenerRemoteCallbackList= new RemoteCallbackList<>();
 
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-
     private ScheduledFuture scheduledFuture;
+
+
+    ////////////////////////////////////////////////////////////
+    //
+    //      开始实现服务接口
+    //
+    ////////////////////////////////////////////////////////////
 
     private IConnectionService connectionService = new IConnectionService.Stub() {
         @Override
@@ -52,7 +57,7 @@ public class RemoteService extends Service {
                         int size = messageReceiveListenerRemoteCallbackList.beginBroadcast();
                         for (int i = 0; i < size ; i++) {
                             Message msg = new Message();
-                            msg.setContent("This message from remote");
+                            msg.setContent("<- This message from remote");
                             try {
                                 messageReceiveListenerRemoteCallbackList.getBroadcastItem(i).onReceiveMessage(msg);
                             } catch (RemoteException e) {
@@ -72,6 +77,7 @@ public class RemoteService extends Service {
         public void disconnect() throws RemoteException {
             isConnected = false;
             scheduledFuture.cancel(true); // 取消定时任务
+
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -88,11 +94,13 @@ public class RemoteService extends Service {
                     Toast.makeText(RemoteService.this, String.valueOf(isConnected), Toast.LENGTH_SHORT).show();
                 }
             });
+
             return isConnected;
         }
     };
 
     private IMessageService messageService = new IMessageService.Stub() {
+
         @Override
         public void sendMessage(Message message) throws RemoteException {
             handler.post(new Runnable() {
@@ -107,6 +115,7 @@ public class RemoteService extends Service {
                 message.setSendSuccess(false);
             }
 
+            Log.d("Che", "remote got message => " + message.getContent());
         }
 
         @Override
@@ -114,7 +123,6 @@ public class RemoteService extends Service {
             if (messageReceiveListener != null) {
                 messageReceiveListenerRemoteCallbackList.register(messageReceiveListener);
             }
-
         }
 
         @Override
@@ -125,10 +133,12 @@ public class RemoteService extends Service {
         }
     };
 
+    // 自己实现了一个服务管理器
     private IServiceManager serviceManager = new IServiceManager.Stub() {
 
         @Override
         public IBinder getService(String serviceName) throws RemoteException {
+            // 分发不同服务的binder
             if (IConnectionService.class.getSimpleName().equals(serviceName)) {
                 return connectionService.asBinder();
             } else if (IMessageService.class.getSimpleName().equals(serviceName)) {
@@ -139,10 +149,9 @@ public class RemoteService extends Service {
         }
     };
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return serviceManager.asBinder();
+        return serviceManager.asBinder(); // 返回的是manager的binder
     }
 
     @Override

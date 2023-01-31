@@ -42,22 +42,21 @@ public class MainActivity extends AppCompatActivity {
     private IMessageService messageServiceProxy;
     private IServiceManager serviceManagerProxy;
 
+    // 反向使用
     private MessageReceiveListener messageReceiveListener = new MessageReceiveListener.Stub() {
+
         @Override
         public void onReceiveMessage(Message message) throws RemoteException {
-
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this, message.getContent(), Toast.LENGTH_SHORT).show();
                 }
             });
-
         }
     };
 
     private boolean bound; // 绑定了与否的标志
-
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -148,13 +147,20 @@ public class MainActivity extends AppCompatActivity {
         v.addAction("com.example.app_service.myaction");
         this.getApplicationContext().registerReceiver(new MyReceiver(), v); // context分是app的还是activity的!
 
+
+        ////////////////////////////////////////////////////////////
+        //
         // 启动子进程, 进程间通信AIDL
+        //
+        ////////////////////////////////////////////////////////////
+
         Intent intent = new Intent(this, RemoteService.class);
         bindService(intent, new ServiceConnection() {
+
             @Override
             public void onServiceConnected(ComponentName name, IBinder iBinder) {
                 try {
-                    serviceManagerProxy = IServiceManager.Stub.asInterface(iBinder);
+                    serviceManagerProxy = IServiceManager.Stub.asInterface(iBinder); // 获取到的是manager自己的binder, 得到连接
                     connectionServiceProxy = IConnectionService.Stub.asInterface(serviceManagerProxy.getService(IConnectionService.class.getSimpleName()));
                     messageServiceProxy = IMessageService.Stub.asInterface(serviceManagerProxy.getService(IMessageService.class.getSimpleName()));
                 } catch (RemoteException e) {
@@ -172,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
         btn5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Che", "Connect");
                 try {
                     connectionServiceProxy.connect();
                 } catch (RemoteException e) {
@@ -185,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
         btn6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Che", "Disonnect");
                 try {
                     connectionServiceProxy.disconnect();
                 } catch (RemoteException e) {
@@ -214,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Message msg = new Message();
-                    msg.setContent("message from main");
+                    msg.setContent("message from main client");
                     messageServiceProxy.sendMessage(msg);
+                    Log.d("Che", "message.isSendSuccess => " + msg.isSendSuccess()+ ", content =>" + msg.getContent());
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -227,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    // 会传递一个listener
                     messageServiceProxy.registerMessageReceiveListener(messageReceiveListener);
                 } catch (RemoteException e) {
                     e.printStackTrace();
