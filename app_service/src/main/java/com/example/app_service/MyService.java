@@ -19,62 +19,13 @@ import androidx.core.app.NotificationCompat;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 
-// 服务种类:
-// 1. Scheduled服务
-// 2. Started服务, 与启动组件无关
-// 3. Bound服务, 当bind的服务的组件都解绑时，服务消亡
-//  服务可以选择是否拥有bind属性
-//
-// Bound服务注意点: c-s形式的服务, 需要返回IBinder接口
-//      1. 同一进程 => 当c-s端在一个进程中的时候， IBinder可以直接继承Binder
-//      2. 不同进程 => 通过Message或者AIDL通信
-
 // 以下是Bound服务，服务端的实现代码
 public class MyService extends Service {
 
     public MyService() {
     }
 
-    // 首先, 需要返回IBinder接口, 可以添加接口实现方法
-    public class MyBinder extends Binder {
-        MyService getService() {
-            return MyService.this;
-        }
-
-        int add(int a, int b) { // 自添加的
-            return a + b;
-        }
-
-        // todo: 其他功能
-    }
-
-    private final IBinder mbinder = new MyBinder(); // 接口实例, 返回给客户端
-
-    // 其次， 实现收到Client发送请求的, 服务端的回调
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d("Che", "MyService onBind.");
-        return mbinder; // !!!注意, 必须返回一个IBinder
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return super.onUnbind(intent);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d("Che", "MyService onCreate");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("Che", "MyService onDestrory");
-    }
-
-    // 客户端startService方式启动服务，服务部分的回调
+    // >>> 1. 客户端startService方式启动服务，服务部分的回调
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String channelId = null;
@@ -125,5 +76,45 @@ public class MyService extends Service {
 
     public void testToCall() {
         Log.d("Che", "testToCall called!");
+    }
+
+    // >>> 2, bind服务实现
+    // 首先, 需要返回IBinder接口, 可以添加接口实现方法
+    public class MyBinder extends Binder {
+        MyService getService() {
+            return MyService.this;
+        }
+
+        int add(int a, int b) { // 自添加的
+            return a + b;
+        }
+
+        // todo: 其他功能
+    }
+
+    private final IBinder mbinder = new MyBinder(); // 接口实例, 返回给客户端
+
+    // 其次， 实现收到Client发送请求的, 服务端的回调
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d("Che", "MyService onBind.");
+        return mbinder; // !!!注意, 必须返回一个IBinder
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("Che", "MyService onCreate");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Che", "MyService onDestrory");
     }
 }

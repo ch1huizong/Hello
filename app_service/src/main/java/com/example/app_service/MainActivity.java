@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 //import android.os.Message;
 import android.os.Looper;
+import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +33,7 @@ import com.example.app_service.entity.Message;
 //
 // Bound服务注意点: c-s形式的服务, 需要返回IBinder接口!
 //      1. 当c-s端在一个进程中的时候， IBinder可以直接继承Binder
-//      2. 不在同一进程, 通过Message或者AIDL通信
+//      2. 不在同一进程, 通过AIDL或Messenger通信
 
 
 // 服务的客户端代码部分
@@ -41,6 +42,27 @@ public class MainActivity extends AppCompatActivity {
     private IConnectionService connectionServiceProxy;
     private IMessageService messageServiceProxy;
     private IServiceManager serviceManagerProxy;
+
+    // 使用Messenger进程间通信
+    private Messenger messengerProxy;
+
+    private Handler handler_client = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            super.handleMessage(msg);
+
+            Bundle data = msg.getData();
+            data.setClassLoader(Message.class.getClassLoader());
+            Message message = data.getParcelable("message");
+            handler_client.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, message.getContent(), Toast.LENGTH_SHORT).show();
+                }
+            }, 3000);
+        }
+    };
+    private Messenger messengerClient = new Messenger(handler_client);
 
     // 反向使用
     private MessageReceiveListener messageReceiveListener = new MessageReceiveListener.Stub() {
@@ -76,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // 客户端组件如何绑定指定服务? Intent
     public void boundClick(View view) {
         Intent intent = new Intent(this, MyService.class);
         if (!bound) {
@@ -93,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 第一种方式启动服务
+        // startService => 第一种方式启动服务
         Button btn = findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 第二种方式启动服务
+        // bindService => 第二种方式启动服务
         Button btn4 = findViewById(R.id.button4);
         btn4.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // 线程间通信
         Button btn3 = findViewById(R.id.button3);
         btn3.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         ////////////////////////////////////////////////////////////
 
         Intent intent = new Intent(this, RemoteService.class);
-        bindService(intent, new ServiceConnection() {
+        bindService(intent, new ServiceConnection() { // 开启服务，设置回调
 
             @Override
             public void onServiceConnected(ComponentName name, IBinder iBinder) {
@@ -163,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     serviceManagerProxy = IServiceManager.Stub.asInterface(iBinder); // 获取到的是manager自己的binder, 得到连接
                     connectionServiceProxy = IConnectionService.Stub.asInterface(serviceManagerProxy.getService(IConnectionService.class.getSimpleName()));
                     messageServiceProxy = IMessageService.Stub.asInterface(serviceManagerProxy.getService(IMessageService.class.getSimpleName()));
+                    messengerProxy = new Messenger(serviceManagerProxy.getService(Messenger.class.getSimpleName()));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -247,6 +270,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     messageServiceProxy.unRegisterMessageReceiveListener(messageReceiveListener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button btn_send_by_messenger = findViewById(R.id.btn_send_by_messenger);
+        btn_send_by_messenger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Message message = new Message();
+                    message.setContent("message from main by Messenger");
+
+                    android.os.Message data = new android.os.Message();
+                    data.replyTo = messengerClient;
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("message", message);
+                    data.setData(bundle);
+                    messengerProxy.send(data);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

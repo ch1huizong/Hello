@@ -2,13 +2,17 @@ package com.example.app_service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Messenger;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.example.app_service.entity.Message;
 
@@ -23,7 +27,32 @@ public class RemoteService extends Service {
     private boolean isConnected = false;
 
     // 使子进程的消息发送回主进程
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            super.handleMessage(msg);
+
+            // 处理消息
+            Bundle data = msg.getData();
+            data.setClassLoader(Message.class.getClassLoader());
+            Message message = data.getParcelable("message");
+            Messenger messengerClient = msg.replyTo;
+            Toast.makeText(RemoteService.this, message.getContent(), Toast.LENGTH_SHORT).show();
+
+            // 发送响应
+            try {
+                Message reply = new Message();
+                reply.setContent("message reply from remote");
+                android.os.Message m = new android.os.Message();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("message", reply);
+                m.setData(bundle);
+                messengerClient.send(m);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     //ArrayList<MessageReceiveListener> messageReceiveListener= new ArrayList<>();
     RemoteCallbackList<MessageReceiveListener> messageReceiveListenerRemoteCallbackList= new RemoteCallbackList<>();
@@ -31,6 +60,7 @@ public class RemoteService extends Service {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private ScheduledFuture scheduledFuture;
 
+    private Messenger messenger = new Messenger(handler);
 
     ////////////////////////////////////////////////////////////
     //
@@ -143,6 +173,8 @@ public class RemoteService extends Service {
                 return connectionService.asBinder();
             } else if (IMessageService.class.getSimpleName().equals(serviceName)) {
                 return messageService.asBinder();
+            } else if(Messenger.class.getSimpleName().equals(serviceName)) {
+                return messenger.getBinder();
             } else {
                 return null;
             }
