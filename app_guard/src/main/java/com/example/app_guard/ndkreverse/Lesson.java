@@ -1,4 +1,4 @@
-package com.example.proguard.ndkreverse;
+package com.example.app_guard.ndkreverse;
 
 public class Lesson {
     static {

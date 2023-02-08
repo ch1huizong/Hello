@@ -1,4 +1,4 @@
-package com.example.proguard;
+package com.example.app_guard;
 
 import android.os.Parcel;
 import android.os.Parcelable;

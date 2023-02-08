@@ -1,4 +1,4 @@
-package com.example.proguard;
+package com.example.app_guard;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,7 +6,8 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.proguard.ndkreverse.Lesson;
+import com.example.app_guard.ndkreverse.Lesson;
+
 
 // 代码混淆案例
 public class MainActivity extends AppCompatActivity {
