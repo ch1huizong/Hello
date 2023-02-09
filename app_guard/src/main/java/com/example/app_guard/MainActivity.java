@@ -6,7 +6,12 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.app_guard.log.Logger;
 import com.example.app_guard.ndkreverse.Lesson;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 // 代码混淆案例
@@ -25,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Logger.d("Che", "MainActivity onCreate");
 
-        Log.d("Che", name + " : " + position);
-        Log.d("Che", "混淆模块开始启动");
+        Log.d("Che", name + " => " + position);
 
         two = new ClassTwo();
         three = new ClassThree();
@@ -35,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
         lesson = new Lesson();
 
         try {
-            //bundle.putParcelable("key", new Book());
+            //bundle.putParcelable("key", new Book("Python"));
             functionA(null); // 类内实例方法
+            Log.d("Che", functionB("onCreate1"));
 
             ClassOne.functionA(); // 静态方法
 
@@ -49,10 +55,27 @@ public class MainActivity extends AppCompatActivity {
             lesson.SetLessonName("Python");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d("Che", "出错了?");
         }
     }
 
     public void functionA(View v) {
 
+    }
+
+    public String functionB(String message) throws NoSuchAlgorithmException {
+        String data =  message + " calling funtionB";
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(data.getBytes());
+        BigInteger bigInteger = new BigInteger(1, md5.digest());
+
+        return bigInteger.toString(16);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("Che", "MainActivity onDestroy");
     }
 }

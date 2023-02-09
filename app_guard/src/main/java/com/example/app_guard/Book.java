@@ -5,6 +5,12 @@ import android.os.Parcelable;
 
 public class Book implements Parcelable {
 
+    private String name;
+
+    protected Book(Parcel in) {
+        name = in.readString();
+    }
+
     public static final Creator<Book> CREATOR = new Creator<Book>() {
         @Override
         public Book createFromParcel(Parcel in) {
@@ -17,9 +23,6 @@ public class Book implements Parcelable {
         }
     };
 
-    protected Book(Parcel in) {
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -27,5 +30,18 @@ public class Book implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+    }
+
+    public Book(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
