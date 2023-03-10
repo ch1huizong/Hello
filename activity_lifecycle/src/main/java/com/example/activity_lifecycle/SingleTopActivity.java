@@ -13,8 +13,8 @@ public class SingleTopActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_top);
-        Log.d("Che", "[SingleTop] onCreate");
-        Log.d("Che", "[SingleTopActivity] ID - " + getTaskId());
+        Log.d("Che", " == SingleTop onCreate");
+        Log.d("Che", " == SingleTopActivity ID - " + getTaskId());
 
         Button btn = findViewById(R.id.single_button);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -30,7 +30,6 @@ public class SingleTopActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        Log.d("Che", "This is a new intent from [SingleTopActivity]");
+        Log.d("Che", "This is a new intent from SingleTopActivity !!! ");
     }
 }

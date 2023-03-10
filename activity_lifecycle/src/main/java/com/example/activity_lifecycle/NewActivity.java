@@ -10,6 +10,6 @@ public class NewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new);
-        Log.d("Che", "[NewActivity] Task ID - " + getTaskId());
+        Log.d("Che", " == NewActivity Task ID - " + getTaskId());
     }
 }
