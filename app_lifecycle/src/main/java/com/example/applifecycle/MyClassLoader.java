@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
+
 public class MyClassLoader extends ClassLoader {
 
     public ClassLoader mBase;
@@ -22,11 +23,11 @@ public class MyClassLoader extends ClassLoader {
         Class<?> cClassLoader = Class.forName("ClassLoader");
         try {
             Method m_findClass = cClassLoader.getDeclaredMethod("findClass", String.class);
-            return (Class<?>) m_findClass.invoke(mBase, name); // 反射调用findClass
+            return (Class<?>) m_findClass.invoke(mBase, name); // 反射调用mBase里实现的findClass方法
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //return mBase.findClass(name); 没这个api?
+        //return mBase.findClass(name); 没这个api? 否，方法是protected，并且没有实现体！
 
         return null;
     }

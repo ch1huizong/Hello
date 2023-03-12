@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -65,11 +66,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 验证双亲委派模型
+    // 验证ClassLoader的双亲模式
     public static void checkClassLoader(ClassLoader c) {
-        // 验证ClassLoader的双亲模式
         ClassLoader thisClassLoader = c;
-        Log.i("Che", "app:" + thisClassLoader);
+        Log.i("Che", " ==> app:" + thisClassLoader);
         ClassLoader parentClassLoader = null;
         parentClassLoader = thisClassLoader.getParent();
 
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             thisClassLoader = parentClassLoader;
             parentClassLoader = thisClassLoader.getParent();
         }
-        Log.d("Che", "root:" + thisClassLoader);
-
+        Log.d("Che", " ==> root:" + thisClassLoader);
     }
 }
+
